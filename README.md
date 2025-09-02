@@ -51,4 +51,4 @@ This project is designed for simplicity and requires no installation or build co
 
 The application will start immediately.
 
--   **Password:** `password123`
+-   **Password:** `1234`
