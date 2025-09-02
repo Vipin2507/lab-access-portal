@@ -4,13 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Internal Lab Access</title>
-    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React and Babel for running JSX in the browser -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Google Fonts for futuristic UI -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
@@ -22,25 +19,19 @@
             color: #e0e0e0;
             overflow: hidden;
         }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
         
-        .font-orbitron {
-            font-family: 'Orbitron', sans-serif;
-        }
-
         .main-bg {
             background-color: #010409;
             background-image:
                 linear-gradient(rgba(2, 21, 39, 0.5) .1em, transparent .1em),
                 linear-gradient(90deg, rgba(2, 21, 39, 0.5) .1em, transparent .1em);
             background-size: 3em 3em;
+            animation: grid-scroll 15s linear infinite;
         }
-        
-        .glass-panel {
-            background: rgba(10, 25, 47, 0.5);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        @keyframes grid-scroll {
+            from { background-position: 0 0; }
+            to { background-position: 3em 3em; }
         }
 
         .tech-card {
@@ -54,7 +45,6 @@
             transform: translateY(-4px);
             box-shadow: 0 0 20px rgba(21, 162, 224, 0.3);
         }
-        
         @keyframes content-fade-in {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -62,6 +52,53 @@
         .animate-content-fade-in {
             animation: content-fade-in 0.5s ease-out forwards;
         }
+
+        .text-glow {
+            text-shadow: 0 0 8px rgba(34, 211, 238, 0.5), 0 0 2px rgba(34, 211, 238, 0.5);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.4)); }
+            50% { filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.8)); }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+        
+        .char-box {
+            height: 3.5rem;
+            width: 2.5rem;
+            background-color: rgba(14, 165, 233, 0.05);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease-in-out;
+        }
+        .char-box-filled::after {
+            content: '●';
+            color: #22D3EE;
+            font-size: 1.5rem;
+            animation: pop-in 0.2s ease-out;
+        }
+        @keyframes pop-in {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes flash-red {
+            0%, 100% { border-color: rgba(248, 113, 113, 0.4); box-shadow: 0 0 8px rgba(248, 113, 113, 0); }
+            50% { border-color: #f87171; box-shadow: 0 0 8px rgba(248, 113, 113, 0.5); }
+        }
+        .animate-flash-red .char-box, .animate-flash-red .lock-error {
+            animation: flash-red 0.5s ease-in-out 2;
+        }
+        .lock-error {
+            --tw-text-opacity: 1;
+            color: rgb(248 113 113 / var(--tw-text-opacity));
+            filter: drop-shadow(0 0 8px rgba(248, 113, 113, 0.7));
+        }
+
     </style>
 </head>
 <body>
@@ -70,15 +107,14 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        const CORRECT_PASSWORD = "password123";
+        const CORRECT_PASSWORD = "1234";
         const TOTAL_TIME_SECONDS = 600; 
 
         // --- SVG Icons ---
-        const FingerprintIcon = () => (
-            <svg className="w-16 h-16 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 12a3 3 0 0 0-3 3" /><path d="M12 12a6 6 0 0 1 6 6" /><path d="M12 12a9 9 0 0 0-9 9" />
-                <path d="M12 12c0-3.5 2-6.5 5-8" /><path d="M12 12c0 3.5-2 6.5-5 8" />
-                <path d="M12 5a3 3 0 0 1 3 3" /><path d="M12 5a6 6 0 0 0-6 6" /><path d="M12 5a9 9 0 0 1 9 9" />
+        const LockIcon = ({ className }) => (
+            <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
         );
         const CloseIcon = () => (
@@ -86,93 +122,128 @@
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
         );
+        const VerticalBattery = ({ percentage }) => {
+            const fillHeight = Math.max(0, Math.min(100, percentage));
+            return (
+                <div className="flex items-center justify-center p-2">
+                    <svg width="28" height="48" viewBox="0 0 28 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="5" width="24" height="40" rx="4" stroke="#6B7280" strokeWidth="2"/>
+                        <rect x="8" y="2" width="12" height="3" rx="1.5" fill="#6B7280"/>
+                        <rect x="4" y={43 - (fillHeight / 100) * 36} width="20" height={(fillHeight / 100) * 36} rx="2" fill="#22D3EE"/>
+                    </svg>
+                </div>
+            );
+        };
 
         // --- UI Components ---
-
         const InfoPanel = () => (
-            <div className="w-72 p-6 space-y-6 text-sm border-r border-cyan-900/50">
-                <h3 className="text-cyan-400 font-orbitron">JAVA</h3>
+            <div className="w-72 p-6 space-y-6 text-sm border-r border-cyan-900/50 bg-[#010409]/80 backdrop-blur-sm">
+                <h3 className="text-cyan-400 font-orbitron text-glow">JAVA</h3>
                 <p className="text-xs text-gray-400">This course is provisioned by Zicops Labs</p>
                 <div className="space-y-4">
-                    <div>
-                        <div className="flex justify-between items-center text-gray-300"><span>EXERCISE</span><span>9 <span className="text-gray-500">completed out of 84.</span></span></div>
-                    </div>
-                    <div>
-                        <div className="flex justify-between items-center text-gray-300"><span>PROJECTS</span><span>2 <span className="text-gray-500">completed out of 84.</span></span></div>
-                    </div>
-                    <div>
-                        <div className="flex justify-between items-center text-gray-300"><span>TIME SPENT</span><span>5 <span className="text-gray-500">completed out of 84.</span></span></div>
-                    </div>
+                    <div><div className="flex justify-between items-center text-gray-300"><span>EXERCISE</span><span>9 <span className="text-gray-500">of 84</span></span></div></div>
+                    <div><div className="flex justify-between items-center text-gray-300"><span>PROJECTS</span><span>2 <span className="text-gray-500">of 8</span></span></div></div>
+                    <div><div className="flex justify-between items-center text-gray-300"><span>TIME SPENT</span><span>5 <span className="text-gray-500">of 84h</span></span></div></div>
                 </div>
             </div>
         );
 
         const TimerPanel = ({ timeLeft }) => {
             const formatTime = (seconds) => {
-                const totalMinutes = Math.floor(seconds / 60);
-                const remainingSeconds = seconds % 60;
-                return `${String(totalMinutes).padStart(2, '0')} mins ${String(remainingSeconds).padStart(2,'0')} s`;
+                const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+                const secs = String(seconds % 60).padStart(2, '0');
+                return `${mins}m ${secs}s`;
             };
             const initialMinutes = Math.floor(TOTAL_TIME_SECONDS / 60);
-
+            const timePercentage = (timeLeft / TOTAL_TIME_SECONDS) * 100;
             return (
-                 <div className="w-72 p-6 space-y-2 text-right border-l border-cyan-900/50">
-                    <button className="text-gray-500 hover:text-white ml-auto"> <CloseIcon /> </button>
-                    <h3 className="text-cyan-400 font-orbitron pt-4">TIME REMAINING</h3>
-                    <p className="text-3xl font-orbitron text-white">{formatTime(timeLeft)}</p>
+                 <div className="w-72 p-6 space-y-2 text-right border-l border-cyan-900/50 flex flex-col items-end bg-[#010409]/80 backdrop-blur-sm">
+                    <button className="text-gray-500 hover:text-white mb-4"> <CloseIcon /> </button>
+                    <h3 className="text-cyan-400 font-orbitron text-glow">TIME REMAINING</h3>
+                    <VerticalBattery percentage={timePercentage} />
+                    <p className="text-3xl font-orbitron text-white mt-2 text-glow">{formatTime(timeLeft)}</p>
                     <p className="text-sm text-gray-400">out of {initialMinutes} Min</p>
                  </div>
             );
         };
 
-        const LoginModal = ({ password, setPassword, handleLogin, error, isAnimating }) => (
-            <div className="animate-content-fade-in flex flex-col items-center justify-center h-full">
-                <div className="text-center w-80 glass-panel p-8 rounded-lg">
-                    <div className="flex justify-center mb-4">
-                        <div className="w-24 h-24 rounded-full border-2 border-cyan-400/50 flex items-center justify-center bg-cyan-900/20">
-                           <FingerprintIcon />
-                        </div>
-                    </div>
-                    <h2 className="text-lg font-bold text-white mb-2 font-orbitron">Enter Your Zicops Password</h2>
-                    <form onSubmit={handleLogin}>
-                         <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-2 mt-2 bg-transparent border border-cyan-700/50 rounded-md text-white placeholder-cyan-200/50 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition font-orbitron tracking-widest text-center"
-                            disabled={isAnimating}
-                            autoFocus
-                        />
-                        <button
-                            type="submit"
-                            className="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-2 px-4 rounded-md transition-transform transform hover:scale-105 disabled:opacity-50"
-                            disabled={isAnimating}
-                        >
-                            {isAnimating ? 'ENTERING...' : 'Enter Lab'}
-                        </button>
-                    </form>
-                    {error && <p className="mt-4 text-xs text-red-400">{error}</p>}
+        const PasswordInput = ({ password, hasError }) => {
+            const boxes = Array.from({ length: CORRECT_PASSWORD.length });
+            return (
+                <div className={`flex justify-center items-center gap-2 mt-4 ${hasError ? 'animate-flash-red' : ''}`}>
+                    {boxes.map((_, index) => (
+                        <div key={index} className={`char-box ${index < password.length ? 'char-box-filled' : ''}`}></div>
+                    ))}
                 </div>
-            </div>
-        );
+            );
+        };
+
+        // UPDATED: Now fades out its lock when animation starts
+        const LoginScreen = ({ password, setPassword, error, isAnimating }) => {
+            const inputRef = useRef(null);
+            useEffect(() => {
+                inputRef.current.focus();
+            }, []);
+            return (
+                <div className="flex flex-col items-center justify-center h-full" onClick={() => inputRef.current.focus()}>
+                    <div className="relative flex flex-col items-center justify-center">
+                        <LockIcon className={
+                            `w-48 h-48 transition-all duration-300 
+                            ${isAnimating ? 'opacity-0 scale-75' : 'opacity-100 scale-100'} 
+                            ${error ? 'lock-error' : 'text-cyan-800 animate-pulse-glow'}`
+                        } />
+                        <h2 className="font-orbitron text-2xl mt-4 text-gray-400">SYSTEM ACCESS</h2>
+                        <p className="text-gray-500">Enter authorization code</p>
+                    </div>
+                    
+                    <PasswordInput password={password} hasError={!!error} />
+
+                    <input ref={inputRef} type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="absolute w-px h-px opacity-0"/>
+
+                    {error && <p className="mt-8 text-lg text-red-400 font-orbitron">{error}</p>}
+                </div>
+            );
+        };
+        
+        // UPDATED: Lock now "powers up" from dim to bright
+        const EntryAnimation = ({ isAnimating }) => {
+            const [startAnimation, setStartAnimation] = useState(false);
+            useEffect(() => {
+                if (isAnimating) {
+                    const timer = setTimeout(() => setStartAnimation(true), 50);
+                    return () => clearTimeout(timer);
+                } else {
+                    setStartAnimation(false);
+                }
+            }, [isAnimating]);
+
+            if (!isAnimating) return null;
+            
+            return (
+                <div className="fixed inset-0 z-50 overflow-hidden pointer-events-none">
+                    <div className="absolute top-0 left-0 w-1/2 h-full bg-[#010409] transition-transform duration-1000 ease-in-out" style={{ transform: startAnimation ? 'translateX(-100%)' : 'translateX(0)' }}/>
+                    <div className="absolute top-0 right-0 w-1/2 h-full bg-[#010409] transition-transform duration-1000 ease-in-out" style={{ transform: startAnimation ? 'translateX(100%)' : 'translateX(0)' }}/>
+                    <div className="absolute inset-0 flex items-center justify-center transition-all duration-700 ease-in-out" style={{ opacity: startAnimation ? 0 : 1, transform: startAnimation ? 'scale(0.5) rotate(180deg)' : 'scale(1) rotate(0deg)' }}>
+                        <LockIcon className={
+                            `w-48 h-48 transition-colors duration-300 
+                            ${startAnimation ? 'text-cyan-400 text-glow' : 'text-cyan-800 animate-pulse-glow'}`
+                        } />
+                    </div>
+                </div>
+            );
+        };
 
         const LabDashboard = ({ handleExit }) => {
             const tech = ["React JS", "C", "Angular", "Tailwind CSS", "TensorFlow", "HTML 5", "GraphQL", "python", "node", "php"];
-            const emptySlots = Array(15 - tech.length).fill(null); // Ensure a full grid
-
+            const emptySlots = Array(15 - tech.length).fill(null);
             return (
-                <div className="p-8 h-full flex flex-col animate-content-fade-in">
+                <div className="p-8 h-full flex flex-col animate-content-fade-in bg-[#010409]/50 backdrop-blur-sm">
                     <div className="flex justify-between items-start mb-6">
                         <div>
-                            <h1 className="text-2xl font-orbitron text-cyan-300">Programming</h1>
+                            <h1 className="text-2xl font-orbitron text-cyan-300 text-glow">Programming</h1>
                             <p className="text-sm text-gray-400">Select a lab to begin</p>
                         </div>
-                         <button
-                            onClick={() => handleExit(false)}
-                            className="bg-gray-700 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md transition-all text-sm"
-                        >
-                            Exit
-                        </button>
+                         <button onClick={() => handleExit(false)} className="bg-gray-700 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md transition-all text-sm">Exit</button>
                     </div>
                     <div className="flex-grow grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         {tech.map((t) => <div key={t} className="tech-card p-4 rounded-md flex items-center justify-center text-center cursor-pointer"><span className="font-bold text-gray-300">{t}</span></div>)}
@@ -182,7 +253,6 @@
             );
         }
 
-        // --- Main Application Component ---
         function App() {
             const [isAuthenticated, setIsAuthenticated] = useState(false);
             const [isAnimating, setIsAnimating] = useState(false);
@@ -192,75 +262,66 @@
             const timerRef = useRef(null);
 
             useEffect(() => {
+                if (password.length > 0 && password !== CORRECT_PASSWORD && password.length >= CORRECT_PASSWORD.length) {
+                    setError("ACCESS DENIED");
+                    setTimeout(() => setError(""), 1000); 
+                } else {
+                    setError("");
+                }
+                if (password === CORRECT_PASSWORD && !isAuthenticated && !isAnimating) {
+                    setIsAnimating(true);
+                    setTimeout(() => setIsAuthenticated(true), 500);
+                    setTimeout(() => {
+                        setIsAnimating(false);
+                        setPassword('');
+                    }, 1500);
+                }
+            }, [password, isAuthenticated, isAnimating]);
+
+            useEffect(() => {
                 if (isAuthenticated) {
-                    // Start timer when authenticated
                     timerRef.current = setInterval(() => {
                         setTimeLeft(prevTime => {
                             if (prevTime <= 1) {
                                 clearInterval(timerRef.current);
-                                handleExit(true); // Auto-exit
+                                handleExit(true);
                                 return 0;
                             }
                             return prevTime - 1;
                         });
                     }, 1000);
                 } else {
-                    // Clear timer when not authenticated (paused)
                     clearInterval(timerRef.current);
                 }
-                
-                return () => clearInterval(timerRef.current); // Cleanup on component unmount
+                return () => clearInterval(timerRef.current);
             }, [isAuthenticated]);
-
-            const handleLogin = (e) => {
-                e.preventDefault();
-                setError("");
-
-                if (timeLeft <= 0) {
-                    setError("Allocated time has been exhausted.");
-                    return;
-                }
-
-                if (password === CORRECT_PASSWORD) {
-                    setIsAnimating(true);
-                    // Short delay to show "ENTERING..." message
-                    setTimeout(() => {
-                        setIsAuthenticated(true);
-                        setIsAnimating(false);
-                        setPassword("");
-                    }, 500);
-                } else {
-                    setError("Incorrect password.");
-                    setPassword("");
-                }
-            };
             
             const handleExit = (isAutoExit = false) => {
                 setIsAuthenticated(false);
                 if (isAutoExit) {
                    setError("Session terminated: Time limit reached.");
-                } else {
-                   setError("");
                 }
             };
 
             return (
-                <div className="flex h-full">
-                    <InfoPanel />
-                    <main className="flex-grow h-full">
-                        {isAuthenticated ? (
-                            <LabDashboard handleExit={handleExit} />
-                        ) : (
-                            <LoginModal 
-                                password={password}
-                                setPassword={setPassword}
-                                handleLogin={handleLogin}
-                                error={error}
-                                isAnimating={isAnimating}
-                            />
-                        )}
-                    </main>
-                    <TimerPanel timeLeft={timeLeft} />
+                <div className="relative w-full h-full">
+                    <div className="flex h-full">
+                        <InfoPanel />
+                        <main className="flex-grow h-full">
+                            {isAuthenticated ? (
+                                <LabDashboard handleExit={handleExit} />
+                            ) : (
+                                <LoginScreen 
+                                    password={password}
+                                    setPassword={setPassword}
+                                    error={error || (timeLeft <= 0 && "Time Exhausted.")}
+                                    isAnimating={isAnimating}
+                                />
+                            )}
+                        </main>
+                        <TimerPanel timeLeft={timeLeft} />
+                    </div>
+                    <EntryAnimation isAnimating={isAnimating} />
                 </div>
             );
         }
@@ -271,4 +332,3 @@
     </script>
 </body>
 </html>
-
