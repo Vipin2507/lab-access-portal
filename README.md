@@ -8,7 +8,7 @@ This repository contains the submission for a frontend developer technical task.
 
 This short video demonstrates the application's core functionality, including the login process, the lab dashboard, the session timer, and the exit flow.
 
-<video src="./assets/demo-video.mp4" controls="controls" style="max-width: 720px;"></video>
+![Application Demo](./assets/demo.gif)
 
 ---
 
